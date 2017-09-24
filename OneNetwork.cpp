@@ -80,6 +80,11 @@ double sigmoid(double num) {
   return tanh(num);
 }
 
+double sigmoidPrime(double num) {
+  double sech = 1.0 / cosh(x);
+  return sech*sech; //tanh'(x) = sech^2(x)
+}
+
 void setWeights() {
   double weights1[inputNeurons][hiddenNeurons];
   double weights2[hiddenNeurons][outputNeurons];
@@ -99,11 +104,33 @@ void setWeights() {
   }
 }
 
-int[] forward(int[] examples) {
-  //TODO
+double[] forward(int[] examples) {
+  int size = *(&examples + 1) - examples;
+  if(size != inputNeurons) {
+    return {-1};
+  }
+
+  double hiddenArr[hiddenNeurons];
+  double returnArr[outputNeurons];
+
+  for(int i = 0; i < hiddenNeurons; i++) {
+    double sum = 0;
+    for(int j = 0; j < inputNeurons; j++) {
+      sum += examples[j]*weights1[j][i];
+    }
+    hiddenArr[i] = sigmoid(sum);
+  }
+
+  for(int i = 0; i < outputNeurons; i++) {
+    double sum = 0;
+    for(int j = 0; j < hiddenNeurons; j++) {
+      sum += hiddenArr[j]*weights2[j][i];
+    }
+    returnArr[i] = sigmoid(sum);
+  }
 }
 
-int[] backward(int[] examples, int[] results) {
+double[] backward(int[] examples, int[] results) {
   //TODO
 }
 

@@ -27,9 +27,10 @@ private:
 
 
   double sigmoid(double num);
+  double sigmoidPrime(double num);
   void setWeights();
-  void forward(int[] examples);
-  void backward(int[] examples, int[] expected);
+  double forward(int[] examples);
+  double backward(int[] examples, int[] expected);
   void printArray(int[] array);
 };
 
