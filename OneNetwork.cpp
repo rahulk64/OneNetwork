@@ -130,8 +130,68 @@ double[] forward(int[] examples) {
   }
 }
 
-double[] backward(int[] examples, int[] results) {
-  //TODO
+double[] backward(int[] examples, double[] results, double[] expected) {
+  int size = *(&results + 1) - results;
+  if(size != outputNeurons) return {-1};
+
+  //Adjust Weights between Hidden and Output Layers
+  double marginError[size];
+  for(int i = 0; i < size; i++) {
+    marginError[i] = expected[i] - results[i];
+  }
+
+  double deltaSum[size];
+  double hiddenArr[hiddenNeurons];
+  double tempWeights2[hiddenNeurons][outputNeurons];
+
+  for(int i = 0; i < hiddenNeurons; i++) {
+    double sum = 0;
+    for(int j = 0; j < inputNeurons; j++) {
+      sum += examples[j]*weights1[j][i];
+    }
+    hiddenArr[i] = sigmoid(sum);
+  }
+
+  for(int i = 0; i < size; i++) {
+    double sum = 0;
+    for(int j = 0; j < hiddenNeurons; j++) {
+      sum += hiddenArr[j]*weights2[j][i];
+    }
+    deltaSum[i] = sigmoidPrime(sum)*marginError[i];
+  }
+
+  for(int i = 0; i < outputNeurons; i++) {
+    for(int j = 0; j < hiddenNeurons; j++) {
+      tempWeights2[j][i] += deltaSum[i]/hiddenArr[j];
+    }
+  }
+
+  //Adjust Weights between Input and Output Layers
+  double deltaHidden[hiddenNeurons];
+  double deltaHSum[hiddenNeurons];
+
+  for(int i = 0; i < outputNeurons; i++) {
+    for(int j = 0; j < hiddenNeurons; j++) {
+      deltaHidden[j] = deltaSum[i]/weights2[j][i];
+    }
+  }
+
+  for(int i = 0; i < hiddenNeurons; i++) {
+    double sum = 0;
+    for(int j = 0; j < inputNeurons; j++) {
+      sum += examples[j]*weights1[j][i];
+    }
+    deltaHSum[i] = sigmoidPrime(sum)*deltaHidden[i];
+  }
+
+  for(int i = 0; i < hiddenNeurons; i++) {
+    for(int j = 0; j < inputNeurons; j++) {
+      weights1[j][i] = deltaHSum[i]/examples[j];
+    }
+  }
+
+  weights2 = tempWeights2;
+
 }
 
 void printArray(int[] array, string s) {

@@ -30,7 +30,7 @@ private:
   double sigmoidPrime(double num);
   void setWeights();
   double forward(int[] examples);
-  double backward(int[] examples, int[] expected);
+  double backward(int[] examples, double[] results, double[] expected);
   void printArray(int[] array);
 };
 
